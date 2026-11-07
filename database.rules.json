@@ -1,0 +1,23 @@
+{
+  "rules": {
+    "sebratel_fttx": {
+      ".read": true,
+      ".write": "auth != null && (auth.token.email === 'guiomar.kafer@sebratel.com.br' || auth.token.email.matches('.*@sebratel\\\\.com\\\\.br$'))",
+      "sources": {
+        ".read": true,
+        ".write": "auth != null && (auth.token.email === 'guiomar.kafer@sebratel.com.br' || auth.token.email.matches('.*@sebratel\\\\.com\\\\.br$'))",
+        "$sourceId": {
+          ".validate": "newData.hasChildren(['id', 'name', 'kind', 'rows'])"
+        }
+      },
+      "metadata": {
+        ".read": true,
+        ".write": "auth != null && (auth.token.email === 'guiomar.kafer@sebratel.com.br' || auth.token.email.matches('.*@sebratel\\\\.com\\\\.br$'))"
+      },
+      "settings": {
+        ".read": true,
+        ".write": "auth != null && (auth.token.email === 'guiomar.kafer@sebratel.com.br' || auth.token.email.matches('.*@sebratel\\\\.com\\\\.br$'))"
+      }
+    }
+  }
+}

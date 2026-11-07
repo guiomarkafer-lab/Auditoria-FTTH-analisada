@@ -1,0 +1,39 @@
+{
+  "entities": {
+    "DataSource": {
+      "title": "DataSource",
+      "description": "Conjunto de auditorias FTTX importado via Excel ou Google Drive por administrador",
+      "type": "object",
+      "properties": {
+        "id": { "type": "number", "description": "Identificador único da planilha" },
+        "name": { "type": "string", "maxLength": 200, "description": "Nome do arquivo ou descrição da base" },
+        "kind": { "type": "string", "enum": ["Arquivo CSV", "Arquivo Excel", "Embutido", "Google Drive"], "description": "Tipo de origem" },
+        "type": { "type": "string", "description": "Classificação da auditoria (Online/Offline)" },
+        "rows": { "type": "array", "description": "Lista de registros de auditoria com itens conformes e não conformes" },
+        "loadedAt": { "type": "string", "description": "Data/hora da importação" }
+      },
+      "required": ["id", "name", "kind", "rows", "loadedAt"]
+    },
+    "AppSetting": {
+      "title": "AppSetting",
+      "description": "Configurações gerais do sistema e parâmetros de auditoria",
+      "type": "object",
+      "properties": {
+        "key": { "type": "string", "maxLength": 64, "description": "Chave da configuração" },
+        "value": { "type": "string", "description": "Valor serializado" },
+        "updatedAt": { "type": "string", "description": "Data de atualização" }
+      },
+      "required": ["key", "value"]
+    }
+  },
+  "firestore": {
+    "/sources/{sourceId}": {
+      "schema": "DataSource",
+      "description": "Armazenamento persistente de planilhas de auditoria FTTX gerenciadas pelo admin"
+    },
+    "/settings/{settingId}": {
+      "schema": "AppSetting",
+      "description": "Configurações globais da aplicação"
+    }
+  }
+}

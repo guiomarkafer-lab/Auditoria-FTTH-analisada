@@ -1,0 +1,6 @@
+{
+  "name": "Auditoria FTTx Sebratel",
+  "description": "Painel de auditoria técnica FTTx com análise por IA Gemini, importação de planilhas e controle de acesso.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

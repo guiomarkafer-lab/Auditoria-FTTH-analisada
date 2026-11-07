@@ -1,0 +1,66 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Global Safety Net: Default-deny all unmapped paths
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helper functions
+    function isValidId(id) {
+      return id is string && id.size() > 0 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isSebratelAdmin() {
+      return isSignedIn() && (
+        request.auth.token.email == 'guiomar.kafer@sebratel.com.br' ||
+        request.auth.token.email.matches('.*@sebratel\\.com\\.br$') ||
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+      );
+    }
+
+    // Data Sources Collection (Stores audit sheets imported by Admin)
+    match /sources/{sourceId} {
+      // Anyone (or authenticated company viewers) can read audit sources
+      allow get, list: if true;
+
+      // Only authenticated admin can create, update, or delete audit sources
+      allow create: if isSebratelAdmin() &&
+        isValidId(sourceId) &&
+        incoming().keys().hasAll(['id', 'name', 'kind', 'rows', 'loadedAt']) &&
+        incoming().name is string && incoming().name.size() <= 200 &&
+        incoming().rows is list && incoming().rows.size() <= 15000;
+
+      allow update: if isSebratelAdmin() &&
+        isValidId(sourceId) &&
+        incoming().name is string && incoming().name.size() <= 200;
+
+      allow delete: if isSebratelAdmin() && isValidId(sourceId);
+    }
+
+    // Settings Collection (App configuration, active filters, branding)
+    match /settings/{settingId} {
+      allow get: if true;
+      allow list: if true;
+      allow write: if isSebratelAdmin() && isValidId(settingId);
+    }
+
+    // Admins Collection (Registry of authorized managers)
+    match /admins/{adminId} {
+      allow read: if isSignedIn();
+      allow write: if isSebratelAdmin() && isValidId(adminId);
+    }
+  }
+}
